@@ -1,12 +1,22 @@
-import { createColumnHelper, tableFeatures, useTable } from '@tanstack/react-table';
+import { useState } from 'react';
+import {
+  createColumnHelper,
+  createSortedRowModel,
+  rowSortingFeature,
+  tableFeatures,
+  useTable,
+} from '@tanstack/react-table';
 import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
 import { deleteStock, type PortfolioStock } from '../store/portfolioSlice';
 import { getGainLoss } from '../utils/portfolioCalculations';
 
 
-import { Pencil, Trash2 } from 'lucide-react';
+import { ArrowUpDown, Pencil, Trash2 } from 'lucide-react';
 
-const features = tableFeatures({});
+const features = tableFeatures({
+  rowSortingFeature,
+  sortedRowModel: createSortedRowModel(),
+});
 const columnHelper = createColumnHelper<typeof features, PortfolioStock>();
 
 const EMPTY_HOLDINGS: PortfolioStock[] = [];
@@ -18,6 +28,13 @@ interface PortfolioTableProps {
 export const PortfolioTable = ({ onEdit }: PortfolioTableProps) => {
   const dispatch = useAppDispatch();
   const holdings = useAppSelector((state) => state.portfolio.holdings) ?? EMPTY_HOLDINGS;
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredHoldings = holdings.filter(
+    (stock) =>
+      stock.ticker.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      stock.companyName.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   const columns = columnHelper.columns([
     columnHelper.accessor('ticker', { header: 'Ticker' }),
@@ -74,7 +91,7 @@ export const PortfolioTable = ({ onEdit }: PortfolioTableProps) => {
   const table = useTable({
     features,
     columns,
-    data: holdings,
+    data: filteredHoldings,
   });
 
   if (holdings.length === 0) {
@@ -82,32 +99,53 @@ export const PortfolioTable = ({ onEdit }: PortfolioTableProps) => {
   }
 
   return (
-    <table className="w-full border-collapse text-sm">
-      <thead className="bg-slate-50">
-        {table.getHeaderGroups().map((group) => (
-          <tr key={group.id}>
-            {group.headers.map((header) => (
-              <th
-                key={header.id}
-                className="px-4 py-2 text-left font-semibold text-slate-600 uppercase text-xs tracking-wide border-b border-slate-200"
-              >
-                {header.isPlaceholder ? null : <table.FlexRender header={header} />}
-              </th>
+    <>
+      <input
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="Search by ticker or company..."
+        className="mb-3 border rounded px-3 py-2 w-full max-w-sm"
+      />
+
+      {filteredHoldings.length === 0 ? (
+        <p>No stocks match your search.</p>
+      ) : (
+        <table className="w-full border-collapse text-sm">
+          <thead className="bg-slate-50">
+            {table.getHeaderGroups().map((group) => (
+              <tr key={group.id}>
+                {group.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
+                    className="px-4 py-2 text-left font-semibold text-slate-600 uppercase text-xs tracking-wide border-b border-slate-200 cursor-pointer select-none"
+                  >
+                    {header.isPlaceholder ? null : (
+                      <div className="flex items-center gap-1">
+                        <table.FlexRender header={header} />
+                        <ArrowUpDown size={12} />
+                        {header.column.getIsSorted() === 'asc' && '↑'}
+                        {header.column.getIsSorted() === 'desc' && '↓'}
+                      </div>
+                    )}
+                  </th>
+                ))}
+              </tr>
             ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr key={row.id} className="hover:bg-slate-50">
-            {row.getAllCells().map((cell) => (
-              <td key={cell.id} className="px-4 py-2 border-b border-slate-200">
-                <table.FlexRender cell={cell} />
-              </td>
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="hover:bg-slate-50">
+                {row.getAllCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2 border-b border-slate-200">
+                    <table.FlexRender cell={cell} />
+                  </td>
+                ))}
+              </tr>
             ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+          </tbody>
+        </table>
+      )}
+    </>
   );
 };
