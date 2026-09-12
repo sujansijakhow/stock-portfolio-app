@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "./hooks/reduxHooks";
 import { useStocks } from "./hooks/useStocks";
+import { ChartsPage } from "./pages/ChartPages";
 
 function App() {
   const { data, isLoading } = useStocks();
@@ -11,7 +12,9 @@ function App() {
 
 
   return (
-    <div>App</div>
+    <div>
+      <ChartsPage />
+    </div>
   )
 }
 
