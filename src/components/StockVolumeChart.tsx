@@ -14,6 +14,16 @@ interface Props {
 }
 
 export const StockVolumeChart = ({ stock }: Props) => {
+  const hasVolumeData = stock.history.some((point) => point.volume > 0);
+
+  if (!hasVolumeData) {
+    return (
+      <div className="flex h-[300px] items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center text-sm text-slate-500">
+        Volume data is unavailable for this stock.
+      </div>
+    );
+  }
+
   return (
     <Column
       title={`${stock.ticker} Volume Traded`}

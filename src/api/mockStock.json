@@ -1,7 +1,7 @@
 [
   {
-    "ticker": "AAPL",
-    "companyName": "Apple Inc.",
+    "ticker": "NVTX",
+    "companyName": "NovaTech Dynamics",
     "currentPrice": 227.5,
     "history": [
       { "date": "2026-08-01", "price": 210.2, "volume": 52000000 },
@@ -12,8 +12,8 @@
     ]
   },
   {
-    "ticker": "TSLA",
-    "companyName": "Tesla Inc.",
+    "ticker": "ZENT",
+    "companyName": "Zenith Cloud Labs",
     "currentPrice": 245.3,
     "history": [
       { "date": "2026-08-01", "price": 260.1, "volume": 89000000 },

@@ -3,20 +3,21 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import portfolioReducer from './portfolioSlice';
 
 const storage = {
-  getItem: async (key: string) => {
-    if (typeof window === 'undefined') return null;
-
-    return window.localStorage.getItem(key);
+  getItem: (key: string) => {
+    if (typeof window === 'undefined') return Promise.resolve(null);
+    return Promise.resolve(window.localStorage.getItem(key));
   },
-  setItem: async (key: string, value: string) => {
+  setItem: (key: string, value: string) => {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(key, value);
     }
+    return Promise.resolve();
   },
-  removeItem: async (key: string) => {
+  removeItem: (key: string) => {
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(key);
     }
+    return Promise.resolve();
   },
 };
 
