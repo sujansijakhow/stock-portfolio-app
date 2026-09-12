@@ -1,15 +1,21 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { stockSchema, type StockFormValues } from "./stockSchema";
 import { useAppDispatch } from "../../hooks/reduxHooks";
-import { addStock } from "../../store/portfolioSlice";
+import {
+  addStock,
+  editStock,
+  type PortfolioStock,
+} from "../../store/portfolioSlice";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  editingStock?: PortfolioStock | null;
 }
 
-export const StockFormModal = ({ isOpen, onClose }: Props) => {
+export const StockFormModal = ({ isOpen, onClose, editingStock }: Props) => {
   const dispatch = useAppDispatch();
   const {
     register,
@@ -20,18 +26,38 @@ export const StockFormModal = ({ isOpen, onClose }: Props) => {
     resolver: yupResolver(stockSchema),
   });
 
+  useEffect(() => {
+    if (editingStock) {
+      reset(editingStock);
+    } else {
+      reset({
+        ticker: "",
+        companyName: "",
+        quantity: undefined,
+        purchasePrice: undefined,
+        purchaseDate: "",
+        currentPrice: undefined,
+      });
+    }
+  }, [editingStock, isOpen, reset]);
+
   if (!isOpen) return null;
 
   const onSubmit = (values: StockFormValues) => {
-    dispatch(addStock(values));
-    reset();
+    if (editingStock) {
+      dispatch(editStock({ ...values, id: editingStock.id }));
+    } else {
+      dispatch(addStock(values));
+    }
     onClose();
   };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-        <h2 className="text-lg font-semibold mb-4">Add Stock</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          {editingStock ? "Edit Stock" : "Add Stock"}
+        </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           <div>
@@ -128,9 +154,9 @@ export const StockFormModal = ({ isOpen, onClose }: Props) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 rounded bg-blue-600 text-white"
+              className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
             >
-              Add Stock
+              {editingStock ? "Save Changes" : "Add Stock"}
             </button>
           </div>
         </form>
