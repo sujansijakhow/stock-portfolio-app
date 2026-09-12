@@ -1,0 +1,26 @@
+[
+  {
+    "ticker": "AAPL",
+    "companyName": "Apple Inc.",
+    "currentPrice": 227.5,
+    "history": [
+      { "date": "2026-08-01", "price": 210.2, "volume": 52000000 },
+      { "date": "2026-08-08", "price": 215.8, "volume": 48000000 },
+      { "date": "2026-08-15", "price": 221.4, "volume": 61000000 },
+      { "date": "2026-08-22", "price": 218.9, "volume": 55000000 },
+      { "date": "2026-08-29", "price": 227.5, "volume": 67000000 }
+    ]
+  },
+  {
+    "ticker": "TSLA",
+    "companyName": "Tesla Inc.",
+    "currentPrice": 245.3,
+    "history": [
+      { "date": "2026-08-01", "price": 260.1, "volume": 89000000 },
+      { "date": "2026-08-08", "price": 252.4, "volume": 76000000 },
+      { "date": "2026-08-15", "price": 248.9, "volume": 82000000 },
+      { "date": "2026-08-22", "price": 240.2, "volume": 91000000 },
+      { "date": "2026-08-29", "price": 245.3, "volume": 78000000 }
+    ]
+  }
+]
